@@ -1,0 +1,387 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{chngcntr}
+\usepackage{listing}
+\usepackage[shortlabels]{enumitem}
+\usepackage{physics}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,breqn,bm, mathrsfs}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{subcaption}
+\usepackage[siunitx]{circuitikz}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+\usepackage{steinmetz}
+\usepackage{fancyhdr}
+\usepackage{gensymb}
+\usepackage{titlesec}
+\usepackage{svg}
+\usepackage{biblatex}
+\makeatother
+\newcommand{\ff}{\fontfamily{Broadway}}
+\newcommand{\pran}[1]{\left(#1\right)}
+\newcommand{\krosh}[1]{\left[#1\right]}
+\newcommand{\ee}{\mathrm{e}}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\mean}[1]{\overline{#1}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\x}{\vb*{x}}
+\newcommand{\y}{\vb*{y}}
+\newcommand{\z}{\vb*{z}}
+\newcommand{\A}{\vb{A}}
+\newcommand{\Sig}{\vb{\Sigma}}
+\newcommand{\Mu}{\vb{\mu}}
+\newcommand{\Lam}{\vb{\Lambda}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\W}{\vb{W}}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[L]{Project Phase 1}
+\fancyhead[C]{Introduction to Machine Learning}
+\fancyhead[R]{1401-02}
+\fancyfoot{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\footrulewidth}{0.4pt}
+\begin{document}
+	\newgeometry{ 
+		top=0.5in,  
+		bottom=1in}
+	\begin{titlepage}	
+		\centering
+		\centering
+	{\texttt In The Name OF God}
+	
+	\vspace{0.50cm}
+	\includegraphics[height=4cm , width=4cm]{sharif_logo.png}
+	
+	\vspace{0.35cm}
+	\Large
+	Sharif University
+	
+	\vspace{0.30cm}
+	\large
+	Department of Electrical Engineering
+	
+	\vspace{1cm}
+	\huge
+	\textbf{ََََIntroduction to Machine Learning}
+	
+	\vspace{0.4cm}
+	\textbf{Project Phase 1}
+	
+	\vspace{2cm}
+	\Large
+	Instructor:
+	\vspace{0.2cm}
+	
+	Dr. Sajad Amini
+	
+	\vspace{3cm}
+	Authors:
+	\vspace{0.2cm}
+	
+	Sepehr Kazemi Ranjbar
+	
+	\vspace{0.2cm} 
+	99106599
+	
+	\vspace{0.4cm}
+	Arman Lotfalikhani
+	
+	\vspace{0.2cm} 
+	99106599
+		
+	\end{titlepage}
+	\restoregeometry
+	\setcounter{section}{1}
+	\section{Expectation Maximization}
+	\setcounter{subsection}{2}
+	\setcounter{subsubsection}{2}
+	\subsubsection{The M Step}
+	\color{blue}
+	\large{\textbf{Theory Question 1.}} In your own words, explain how the MM algorithm can deal with nonconvex
+optimization objective functions by considering simpler convex objective functions.
+	\color{black}
+	\\
+	We do not have a general way to compute the global optimizer of the intended function, and the MM method only assures that almost all the time we converge to a local optimizer. Here are some methods that are used to get more accurate results:
+	\begin{enumerate}
+	\item we can start the MM method from many different random starting points, and choosing the best local optimizer as the best answer. Still, we may not find the global optimizer in this method.
+	\item There are special cases where the EM algorithm does not converge to a point at all. We Quote an example from \cite{Article}: \\
+	We consider the function 
+	\begin{equation*}
+	f(\rho,\sigma^2)=8\ln \sigma^2+\frac{18}{\sigma^2}+2\ln (1-\rho^2)+\frac{4}{\sigma^2(1-\rho^2)}
+	\end{equation*}
+	to minimize over the interval $\sigma\geq 0 \quad |\rho|\leq 1$.
+	In minimizing this function  (which originates from the maximum-likelihood estimation of the variance and correlation coefficient of bivariate normal data with missing observations), the EM algorithm gives the majorizer function:
+	\begin{equation*}
+	g(\sigma^2,\rho,\sigma_n^2,\rho_n)=f(\rho,\sigma^2)+2(\ln \frac{\sigma^2(1-\rho^2)}{\sigma_n^2(1-\rho_n^2)} +\frac{\sigma_n^2(1-\rho_n^2)}{\sigma^2(1-\rho^2)}-1)
+	\end{equation*}
+	This function has two global optimizers which are symmetric: $(\sigma^2_{n+1},\rho_{n+1})=(3,\pm \sqrt{2/3-\sigma_n^2(1-\rho_n^2)/6}$. If we use $\sigma_0^2=3$ we will get:
+		\begin{equation*}
+	\rho_{n+1}=-sgn(\rho_n)\sqrt{\frac{1-\rho_n^2}{6}}
+	\end{equation*}
+	Which will oscillate between $\pm \frac{1}{\sqrt{3}}$\\
+	To remove such possibilities, one way is to add the function $\lambda ||x-x_n||_2^2$ to our original majorizer. In this way, the MM algorithm is guaranteed to converge to a local minimizer of the cost function.
+	\item Another way is to use the generalized MM, which in each iteration, instead of one majorizer, considers a set of majorizer functions that need not touch the cost function. 
+	\end{enumerate}	 
+	\color{blue}
+	\large{\textbf{Theory Question 2.}} Briefly explain how the formula for mixture models:
+	\begin{equation*}
+	p(\vb{x}; \vb*{\theta}) =
+\sum^K_{k=1}p_{\vb{Z}}(\vb{z_k}; \vb*{\theta})p_{\vb{X}|\vb{Z}}(\vb{x}|\vb{Z} = \vb{z_k}; \vb*{\theta}),
+	\end{equation*}
+	is the same as the sum over all possible values of Z(i) in equation (9). Explain why it’s easier
+to optimize $p_{\vb{X},\vb{Z}}(\vb{x_n}, \vb{z_n}; \vb{\theta})$ than $p_{\vb{X}}(\vb{x_n}; \vb*{\theta})$ in the context of mixture models. 
+	\color{black}
+	\\ We are assuming a hierarchical model for generating the data samples, so $Z$ partitions the sample space of $X$. The according to the total probability law, we can write:
+	\begin{equation*}
+	p(\vb{x}; \vb*{\theta}) =
+\sum^K_{k=1}p_{\vb{X},\vb{Z}}(\vb{x,Z=z_k}; \vb*{\theta})=\sum^K_{k=1}p_{\vb{Z}}(\vb{z_k}; \vb*{\theta})p_{\vb{X}|\vb{Z}}(\vb{x}|\vb{Z} = \vb{z_k}; \vb*{\theta})
+	\end{equation*}
+	We have also used the definition of conditional probability.	In order to convert this expression to the mixture model, we only need to set $p_{\vb{Z}}(\vb{z_k}; \vb*{\theta})=\pi_k$ and assume $X$ and $Z$ are independent, each with distributions $p_k(X,\vb*{\theta}_k)$ which are from the same distribution type.
+	The main advantage of this new equation is we can use Jensen's inequality to expand the log of this sum to get a lower bound. Then, we can readily exploit the fact that all conditional distributions are of the same kind.\\
+	
+
+	\color{blue}
+	\large{\textbf{Theory Question 3.}} Read about variational inference (or variational bayesian methods) and
+	compare it with the procedure we used for the EM algorithm (You might want to check
+	Wikipedia for this!).
+	\color{black}
+	\\
+	Consider a model with latent variables $\vb{z}$ and observations $\vb{x}$ and known parameters $\vb*{\theta}$, actually $\vb*{\theta}$ is known but if it's unknown we can add it to $\vb{z}$. Now we have to compute posterior :
+	\[
+		p(\vb{z}|\vb{x},\vb*{\theta}) = \frac{p(\vb{z},\vb{x}|\vb*{\theta})p(\vb{z}|\vb*{\theta})}{p(\vb{x})}
+	\]
+	Actually the denominator is not simple to compute because we can have several latent variables or maybe they are continuous, so the integral is not easy to compute. in these situations we have to change our procedure and that is the point \emph{Variational inference} enter. the idea is that we have to estimate posterior with distributions $\{q_n\}_{n=1}^{N}$ which come from a distribution family like \emph{Exponential}.
+	actually we want distribution that minimize :
+	\[
+	\text{D}_{\mathbb{KL}}(q(\vb{z}|\vb*{\psi})||p(\vb{z}|\vb{x}))
+	\]
+	the $\vb*{\psi}$ represent parameters of $q$ distributions. now we expand the above equation:
+	\begin{flalign*}
+			\text{D}_{\mathbb{KL}}(q(\vb{z}|\vb*{\psi})||p(\vb{z}|\vb{x})) &= 
+			\mathbb{E}_{q(\vb{z}|\vb*{\psi})} \left[\ln q(\vb{z}|\vb*{\psi}) - \ln 
+			\frac{p_{\vb*{\theta}}(\vb{x}|\vb{z})p_{\vb*{\theta}}(\vb{z})}{p_{\vb*{\theta}}(\vb{x})}\right]\\
+			&= \underbrace{\mathbb{E}_{q(\vb{z}|\vb*{\psi})} \left[\ln q(\vb{z}|\vb*{\psi}) - \ln 
+				p_{\vb*{\theta}}(\vb{x}|\vb{z})-\ln p_{\vb*{\theta}}(\vb{z})\right]}_{\mathcal{L}(\vb*{\psi}|\vb*{\theta},\vb{x})}+\ln p_{\vb*{\theta}}(\vb{x})\\
+	\end{flalign*}
+	The final term is hard to compute and acutually we don't need it because we want to minimize $\text{D}_{\mathbb{KL}}(q(\vb{z}|\vb*{\psi})||p(\vb{z}|\vb{x}))$ with respect to $\vb*{\psi}$.
+	\\
+	Another important assumption is that all latent variables are independent of each other, i.e.,
+	\[
+	q(\vb{z}|\vb*{\psi}) = \prod_{m=1}^{M} q_m(z_m)
+	\]
+	that distribution $q_m$ has parameters $\psi_{m}$. this is called mean field approximation, so we have:
+	\[
+		\mathcal{L}(\vb*{\psi}|\vb{x},\vb*{\theta}) = -\int q(\vb{z}|\vb*{\psi}) \ln p_{\theta}(\vb{x},\vb{z})\dd \vb{z} - \sum_{m=1}^{M} \mathbb{H}(q_m)
+	\]
+	for optimizing the above equation we use specefic coordinate ascent we called \textbf{CAVI}. at the first we write the mean field equation again:
+	\begin{flalign*}
+		\mathcal{L}(\vb*{\psi}|\vb{x},\vb*{\theta}) = \sum_{z_1}\sum_{z_2}\cdots\sum_{z_M}q_1(z_1)q_2(z_2)\cdots q_{M}(z_M)\ln p_{\vb*{\theta}}(z_1,z_2,\dots,z_M,\vb{x}) + \sum_{m=1}^{M} \mathbb{H}(q_m
+		)
+	\end{flalign*}
+	we optimize this function for $q_i$, so we have:
+	\begin{flalign*}
+		\mathcal{L}(\vb*{\psi}|\vb{x},\vb*{\theta}) = \sum_{z_i} q_{i}(z_i)\left[\ln \tilde{f}_{i}(z_i)-\ln(q_{i}(z_i))\right] +‌\text{const}
+	\end{flalign*}
+	where
+	\begin{flalign*}
+		&\tilde{f}_{i}(z_i) =\\ &\exp\left[\sum_{z_1}\cdots\sum_{z_{i-1}}\sum_{z_{i+1}}\cdots\sum_{z_M}
+		q_1(z_1)\cdots q_{i-1}(z_{i-1})q_{i+1}(z_{i+1})q_M(z_M)\ln p_{\vb*{\theta}}(z_1,\dots,z_{i-1},z_{i+1},\dots,z_M,\vb{x}) \right]
+	\end{flalign*}
+	finally we reach that:
+	\begin{flalign*}
+		\mathcal{L}(\vb*{\psi}|\vb{x},\vb*{\theta}) \propto \sum_{z_i}\text{D}_{\mathbb{KL}}(q_i||\tilde{f}_{i})
+	\end{flalign*}
+	so for optimize that we set:
+	\[
+		q_i(z_i) = \tilde{f}_{i}(z_i)
+	\]
+	Or in the other word:
+	\[
+		q_i(z_i) \propto \exp(\mathbb{E}_{q-i}\left[\ln p_{\vb*{\theta}}(\vb{z},\vb{x})\right])
+	\]
+	where $\mathbb{E}\left[p_{\vb*{\theta}}(\vb{z},\vb{x})\right]$ take expectation through all variable except $z_i$.
+	\\
+	in our procedure we directly compute posterior because we have just 3 clusters (in simulation) or finite cluster. so if our clustering problem was more complicated possibly we can't compute posterior, so we have to use this procedure.
+	\newpage
+	\section{EM Algorithm for GMM and CMM}
+	\subsection{EM for Gaussian Mixture Model}
+	\color{blue}
+	\large{\textbf{Theory Question 4.}} Compute estimate of parameters for Gaussian Mixture Models for $N$ observed data $\left\{\vb{x}_i\right\}_{i=1}^{N}$.
+	\begin{enumerate}
+		\item Determine model parameters and initialize them.
+		\color{black}
+		
+		The parameters of model are:
+		\[
+		\left\{\vb*{\mu}_{k}\right\}_{k=1}^{K},\, \left\{\vb{\Sigma}_{k}\right\}_{k=1}^{K},\, 
+		\left\{\pi_{k}\right\}_{k=1}^{K}
+		\]
+		Out problem is not convex, and has many local minimizers that are not the global minimizer of the cost function. An important consequence is we may converge to a fewer number of clusters, that is, some of the $\pi_k$ converge to zero. As we verify experimentally, the algorithm is most sensitive to the initialization of $\left\{\vb*{\mu}_{k}\right\}_{k=1}^{K}$ There are numerous ways of initializing the parameters. Some of the most popular methods are as follows:
+		\begin{enumerate}
+		\item Running the algorithm for many times with random initialization and choosing the one with the minimum log likelihood. For the initialization, we randomly break the dataset into $K$ parts and use the mean and covariance matrix of the selected sets.
+		\item Using a k-means algorithm (Similar to GMM with fixed $Sigma_k=I$ and $\pi_k=1/K$)
+		\item Choosing K random points of the dataset, according to  \cite{Murphy}
+		\item Using the Farthest point method, according to \cite{Murphy} 
+		\item Assuming some prior information about the means of distributions.
+		\end{enumerate}
+		We have implemented ways c,d and e.\\
+		Farthest point method: First, we choose a random point to set $\mu_1$. Then we choose the point with the most (Euclidian) distance to it as the second central point. After that, to each of the remaining points, we associate the minimum of its distance to $mu_1$ and $mu_2$ and choose the point with the maximum number. The initial minimization ensures that we do not choose a point close to $mu_1$ and far from $m_2$. The procedure is repeated $K-1$ times until we find all the center points.
+		Assuming prior information: In this project, we assume that we know the first 200 points are from distribution 1 and so on. in this method, we initialize:
+		\begin{flalign*}
+			\vb*{\mu}_k^{(0)} &= \frac{3}{N}\sum_{n=N_{k-1}}^{N_{k}} \vb{x}_{n}\\ 
+		\end{flalign*}
+		and for all of the three methods we initalize as follows:
+		\begin{flalign*}
+			\vb{\Sigma}_{k}^{(0)} &= I\\
+			\pi_{k}^{(0)} &= \frac{1}{K} 
+		\end{flalign*}
+		\color{blue}
+		\item 
+		Compute complete dataset likelihood.
+		\color{black}
+		
+		We define $\vb{y_n} = [\vb{x}_n;\vb{z}_n]$, then $\left\{\vb{y}_n\right\}_{n=1}^{N}$ are independent so we have:
+		\begin{flalign*}
+			\text{LL}(\vb*{\theta}) &= \ln p(\mathcal{D}|\vb*{\theta}) = \ln \prod_{n=1}^{N}
+			 p(\vb{x}_n,\vb{z}_n|\vb*{\theta})\\
+			 &=  \sum_{n=1}^{N} \ln  p(\vb{x}_n,\vb{z}_n|\vb*{\theta}) = 
+			 \sum_{n=1}^{N} \ln(p(\vb{x}_n|\vb{z}_n,\vb*{\theta})p(\vb{z}_n|\vb*{\theta}))\\
+			 &= \sum_{n=1}^{N} \ln \prod_{k=1}^{K}\mathcal{N}(\vb{x}_n|\vb*{\mu}_k,\vb{\Sigma}_k)^{z_{nk}} + 
+			 \sum_{n=1}^{N} \ln \prod_{k=1}^{K}\pi_{k}^{z_{nk}}\\
+			 &= \sum_{n=1}^{N}\sum_{k=1}^{K} z_{nk} \ln\mathcal{N}(\vb{x}_n|\vb*{\mu}_k,\vb{\Sigma}_k) + 
+			 \sum_{n=1}^{N} \sum_{k=1}^{K}z_{nk}\ln\pi_{k}\\
+			 &=-\frac{1}{2} \sum_{n=1}^{N}\sum_{k=1}^{K} z_{nk}\pran{\ln(|\vb{\Sigma_k}|) -2 \ln	\pi_k +
+			 (\vb{x}_n-\vb*{\mu}_k)^T\vb{\Sigma_k}^{-1}(\vb{x}_n-\vb*{\mu}_k)} -\frac{Nd}{2} \ln(2\pi) &
+		\end{flalign*}
+	where $z_{nk}$ is one-hot encoding of $\vb{z}_{n}$.
+	\newpage
+	\color{blue}
+	\item 
+	Find closed-form solution for parameters using EM algorithm.
+	\color{black}
+	
+	As discussed above we use equation (21) to derive parameters. actually in E step we set distributions $q_n(z_n) = p(z_n|x_n)$ but in Gaussian mixture model, we assume that $\{q_n\}_{n=1}^{N}$ are identical, we have just distribution as $\text{Cat}(z_n|\vb*{\pi})$. at the first in E step we define:
+	\begin{flalign*}
+			q_{nk}^{(t)} &= p(\vb{z}_n=k|\vb{x}_n,\vb*{\theta}^{(t)}) = \frac{p(\vb{z}_n=k|\vb*{\theta})p(\vb{x}_n|\vb{z}_n,\vb*{\theta})}{p(\vb{x}_n|\vb*{\theta})}\\
+			&= \frac{\pi_{k}^{(t)}p(\vb{x}_n|\vb*{\theta}_{k}^{(t)})}{\sum_{k^\prime=1}^{K}\pi_{k^\prime}^{(t)}p(\vb{x}_n|\vb*{\theta}_{k^\prime}^{(t)})}
+	\end{flalign*}
+Now we have:
+\begin{flalign*}
+	l(\vb*{\theta})^{(t)} &= \sum_{n=1}^{N} \mathbb{E}_{q_{n}^{(t)}}\{ \ln  [p(\vb{x}_n|\vb{z}_n,\vb*{\theta})p(z_n)]\}\\
+	&= \sum_{n=1}^{N} \mathbb{E}_{q_{n}^{(t)}}[ \ln  p(\vb{x}_n|\vb{z}_n,\vb*{\theta})] + 
+	\sum_{n=1}^{N} \mathbb{E}_{q_{n}^{(t)}}[ \ln  p(\vb{z}_n|\vb*{\theta})]\\
+	&= \sum_{n=1}^{N}\mathbb{E}_{q_{n}^{(t)}}\left[ \ln \prod_{k=1}^{K}\mathcal{N}(\vb{x}_n|\vb*{\mu}_k,\vb{\Sigma}_k)^{z_{nk}}\right] + 
+	\sum_{n=1}^{N} \mathbb{E}_{q_{n}^{(t)}}\left[\ln \prod_{k=1}^{K}\pi_{k}^{z_{nk}}\right]\\
+	&= \sum_{n=1}^{N} \sum_{k=1}^{K}\mathbb{E}_{q_{n}^{(t)}}[z_{nk}]\ln\mathcal{N}(\vb{x}_n|\vb*{\mu}_k,\vb{\Sigma}_k)
+	+ 
+	\sum_{n=1}^{N} \sum_{k=1}^{K}\mathbb{E}_{q_{n}^{(t)}}[z_{nk}]\ln \pi_{k}\\
+	&= \sum_{n=1}^{N}\sum_{k=1}^{K}q_{nk}^{(t)}\ln\mathcal{N}(\vb{x}_n|\vb*{\mu}_k,\vb{\Sigma}_k) + 
+	\sum_{n=1}^{N}\sum_{k=1}^{K}q_{nk}^{(t)}\ln\pi_{k}\\
+	&=-\frac{1}{2} \sum_{n=1}^{N}\sum_{k=1}^{K} q_{nk}^{(t)}\pran{\ln(|\vb{\Sigma_k}|) + 
+		(\vb{x}_n-\vb*{\mu}_k)^T\vb{\Sigma}_{k}^{-1}(\vb{x}_n-\vb*{\mu}_k)} + \sum_{n=1}^{N} \sum_{k=1}^{K}q_{nk}^{(t)}\ln\pi_{k} +‌ \text{const}
+\end{flalign*}
+Now in M step we take gradient to obtain $\vb*{\theta}^{(t+1)}$:
+\begin{flalign*}
+	&\pdv{l^{(t)}}{\vb*{\mu}_k} = 0 \Rightarrow \sum_{n=1}^{N} q_{nk}^{(t)} (\vb{\Sigma}_k^{-1} + \pran{\vb{\Sigma}_k^{-1})^T} (\vb{x}_n-\vb*{\mu}_k) = 0 \Rightarrow
+	\boxed{\vb*{\mu}_k^{(t+1)} = \frac{\sum_{n=1}^{N}\vb{x}_nq_{nk}^{(t)}}{\sum_{n=1}^{N}q_{nk}^{(t)}}}\\
+	&\pdv{l^{(t)}}{\vb{\Sigma_{k}}} = 0 \Rightarrow \sum_{n=1}^{N}q_{nk}^{(t)} \vb{\Sigma}_{k}^{-T} - \sum_{n=1}^{N} q_{nk}^{(t)} \vb{\Sigma}_{k}^{-T}(\vb{x}_n-\vb*{\mu}_k)(\vb{x}_n-\vb*{\mu}_k)^T\vb{\Sigma}_k^{-T} = 0\\
+	&\Rightarrow \boxed{\vb{\Sigma}_k^{(t+1)} = \frac{\sum_{n=1}^{N}q_{nk}^{(t)}(\vb{x}_n-\vb*{\mu}_k^{(t+1)})(\vb{x}_n-\vb*{\mu}_k^{(t+1)})^T}{\sum_{n=1}^{N}q_{nk}^{(t)}}=\frac{\sum_{n=1}^{N}q_{nk}^{(t)}\vb{x}_n\vb{x}_n^T}{\sum_{n=1}^{N}q_{nk}^{(t)}}-\vb*{\mu}_k^{(t+1)}(\vb*{\mu}_k^{(t+1)})^T}&
+\end{flalign*}
+\newpage
+for finding $\{\pi_{k}\}_{k=1}^N$ we have to use the Lagrange multiplier method because we have the constraint, $g(\vb*{\pi})=\sum_{k=1}^{K}\pi_{k}-1=0$:
+\begin{flalign*}
+	&\pdv{\pran{l^{(t)}+\lambda g(\vb*{\pi})}}{\pi_k} = 0 \Rightarrow \frac{1}{\pi_{k}}\sum_{n=1}^{N} q_{nk} + \lambda = 0\\
+	&\pdv{\pran{l^{(t)}+\lambda g(\vb*{\pi})}}{\lambda} = 0 \Rightarrow
+	\sum_{k=1}^{K}\pi_{k} = 1\\
+	&\Rightarrow \lambda = -N \Rightarrow 
+	\boxed{\pi_k^{(t+1)} = \frac{1}{N}\sum_{n=1}^{N} q_{nk}^{(t)}}&
+\end{flalign*}
+finally we estimate $q_{nk}^{(t)}$ in E step of its distribution and then use above results to estimate parameter vector $\vb*{\theta}$.
+\end{enumerate}
+\color{black}
+\subsection{EM for Categorical Mixture Model}
+\color{blue}
+\large{\textbf{Theory Question 4.}} Compute estimate of parameters for Categorical Mixture Models for $N$ observed data $\{\vb{x}_i\}_{i=1}^{N}$.
+\begin{enumerate}
+	\item 
+	Determine model parameters and initialize them.
+	\color{black}
+	
+	The model parameters are:
+	\[
+		\{\pi_{k}\}_{k=1}^{K},\, \{\{\theta_{kc}\}_{c=1}^{C}\}_{k=1}^{K}
+	\] 
+	we initialize them as:
+	\[
+		\pi_k^{(0)} = \frac{1}{K},\, \theta_{kc}^{(0)} = \frac{\text{number of c labels in k'th data}}{\text{total labels of k'th data}}
+	\]
+	we use uniform distribution for $pi_{k}$, because we have no prior knowledge. also we set every $\theta_{kc}$ proportional to number of c labels in k'th data as like GMMs.
+	\color{blue}
+	\item 
+	Compute complete dataset likelihood.
+	\color{black}
+	
+	We compute complete log likelihood of $p(\{\vb{x}_n\}_{n=1}^{N},\{\vb{z}_n\}_{n=1}^{N}|\vb*{\theta})$, also we assume that $\vb{x}_n,\vb{z}_n$ are one-hot encoded:
+	\begin{flalign*}
+		\ln p(\mathcal{D}|\vb*{\theta}) &= \ln \prod_{n=1}^{N} p(\vb{x}_n,\vb{z}_n|\vb*{\theta}) = \sum_{n=1}^{N} \ln p(\vb{x}_n,\vb{z}_n|\vb*{\theta}) \\
+		&= \sum_{n=1}^{N} \ln \left[p(\vb{x}_n|\vb{z}_n,\vb*{\theta})p(\vb{z}_n|\vb*{\theta})\right]\\
+		&= \sum_{n=1}^{N} \ln\left[\prod_{k=1}^{K}\text{Cat}(\vb{x}_n|\vb*{\theta}_k)^{z_{nk}}\prod_{k=1}^{K}
+		\pi_{k}^{z_{nk}}\right]&
+	\end{flalign*} 
+\begin{flalign*}
+		&= \sum_{n=1}^{N}\sum_{k=1}^{K} z_{nk}\ln\prod_{c=1}^{C}\theta_{kc}^{x_{nc}} +‌ 
+		\sum_{n=1}^{N}\sum_{k=1}^{K} z_{nk}\ln\pi_k\\
+		&= \sum_{n=1}^{N}\sum_{k=1}^{K} z_{nk}\sum_{c=1}^{C}x_{nc}\ln\theta_{kc} +‌ 
+		\sum_{n=1}^{N}\sum_{k=1}^{K} z_{nk}\ln\pi_k&
+	\end{flalign*} 
+\color{blue}
+\item 
+Find closed-form solution for parameters using EM algorithm.
+\color{black}
+
+We already defined $q_{nk}$ in last question so we have:
+\begin{flalign*}
+		l(\vb*{\theta})^{(t)} &= \sum_{n=1}^{N} \mathbb{E}_{q_{n}^{(t)}}\{ \ln  [p(\vb{x}_n|\vb{z}_n,\vb*{\theta})p(z_n)]\}\\
+	&= \sum_{n=1}^{N} \mathbb{E}_{q_{n}^{(t)}}[ \ln  p(\vb{x}_n|\vb{z}_n,\vb*{\theta})] + 
+	\sum_{n=1}^{N} \mathbb{E}_{q_{n}^{(t)}}[ \ln  p(\vb{z}_n|\vb*{\theta})]\\
+	&= \sum_{n=1}^{N}\sum_{k=1}^{K} \mathbb{E}_{q_{n}^{(t)}}[z_{nk}]\ln\text{Cat}(\vb{x}_n|\vb*{\theta}_k) + \sum_{n=1}^{N} \sum_{k=1}^{K}\mathbb{E}_{q_{n}^{(t)}}[z_{nk}]\ln\pi_{k}\\
+	&=\sum_{n=1}^{N}\sum_{k=1}^{K} q_{nk}^{(t)} \sum_{c=1}^{C}x_{nc}\ln\theta_{kc} +
+	 \sum_{n=1}^{N}\sum_{k=1}^{K} q_{nk}^{(t)}\ln\pi_{k}\\
+\end{flalign*}
+now we optimize the above equation in M step, for that we have to define constraint,
+$g(\vb*{\theta_{k}}) = \sum_{c=1}^{C}\theta_{kc} - 1 = 0$, then we have:
+\begin{flalign*}
+	&\pdv{\pran{l(\vb*{\theta})^{(t)}+\lambda_{k}g(\vb*{\theta}_k)}}{\theta_{kc}} = 0 \Rightarrow \frac{1}{\theta_{kc}}\sum_{n=1}^{N}q_{nk}x_{nc} +‌ \lambda_{k}=0\\
+	&\sum_{c=1}^{C}\theta_{kc} = 1 \Rightarrow \lambda_{k} = -\sum_{n=1}^{N}q_{nk}\sum_{c=1}^{C}x_{nc}
+	\Rightarrow \boxed{\theta_{kc}^{(t+1)} = \frac{\sum_{n=1}^{N}q_{nk}^{(t)}x_{nc}}{\sum_{n=1}^{N}q_{nk}^{(t)}\sum_{c=1}^{C}x_{nc}}}&
+\end{flalign*}
+Now we use constraint, $f(\vb*{\pi})=\sum_{k=1}^{K}\pi_{k} - 1=0$, we see that this is like the Gaussian case, so we just mention the result:
+\begin{flalign*}
+	&\boxed{\pi_k^{(t+1)} = \frac{1}{N}\sum_{n=1}^{N} q_{nk}^{(t)}}&
+\end{flalign*}
+\end{enumerate}
+\color{black}
+\newpage
+\color{ForestGreen}
+\section{EM Algorithm in Real Applications}
+As is requested in the project description in Telegram, we have included out report for this part in the jupyter notebook file
+\color{black}
+\begin{thebibliography}{9}
+\bibitem{Murphy}
+Kevin P.Murphy (2012) \emph{Machine Learning-A Probabilistic Perspective}, MIT Press.
+
+\bibitem{Article}
+Kenneth Lange, Joong-Ho Won, Alfonso Landeros, and Hua Zhou1 :\emph{Nonconvex Optimization via MM Algorithms:
+Convergence Theory} Wiley StatsRef
+\end{thebibliography}
+\end{document}
