@@ -1,0 +1,347 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{chngcntr}
+\usepackage{listing}
+\usepackage[shortlabels]{enumitem}
+\usepackage{physics}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,breqn,bm, mathrsfs}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{subcaption}
+\usepackage[siunitx]{circuitikz}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+\usepackage{steinmetz}
+\usepackage{fancyhdr}
+\usepackage{gensymb}
+\usepackage{titlesec}
+\usepackage{svg}
+\usepackage{biblatex}
+\makeatother
+\newcommand{\ff}{\fontfamily{Broadway}}
+\newcommand{\pran}[1]{\left(#1\right)}
+\newcommand{\krosh}[1]{\left[#1\right]}
+\newcommand{\ee}{\mathrm{e}}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\mean}[1]{\overline{#1}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\x}{\vb*{x}}
+\newcommand{\y}{\vb*{y}}
+\newcommand{\z}{\vb*{z}}
+\newcommand{\A}{\vb{A}}
+\newcommand{\Sig}{\vb{\Sigma}}
+\newcommand{\Mu}{\vb{\mu}}
+\newcommand{\Lam}{\vb{\Lambda}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\W}{\vb{W}}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[L]{Project Phase 2}
+\fancyhead[C]{Introduction to Machine Learning}
+\fancyhead[R]{1401-02}
+\fancyfoot{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\footrulewidth}{0.4pt}
+\begin{document}
+	\newgeometry{ 
+		top=0.5in,  
+		bottom=1in}
+	\begin{titlepage}	
+		\centering
+		\centering
+	{\texttt In The Name OF God}
+	
+	\vspace{0.50cm}
+	\includegraphics[height=4cm , width=4cm]{sharif_logo.png}
+	
+	\vspace{0.35cm}
+	\Large
+	Sharif University
+	
+	\vspace{0.30cm}
+	\large
+	Department of Electrical Engineering
+	
+	\vspace{1cm}
+	\huge
+	\textbf{ََََIntroduction to Machine Learning}
+	
+	\vspace{0.4cm}
+	\textbf{Project Phase 2}
+	
+	\vspace{2cm}
+	\Large
+	Instructor:
+	\vspace{0.2cm}
+	
+	Dr. Sajad Amini
+	
+	\vspace{3cm}
+	Authors:
+	\vspace{0.2cm}
+	
+	Sepehr Kazemi Ranjbar
+	
+	\vspace{0.2cm} 
+	99106599
+	
+	\vspace{0.4cm}
+	Arman Lotfalikhani
+	
+	\vspace{0.2cm} 
+	99109166
+		
+	\end{titlepage}
+	\restoregeometry
+	\setcounter{section}{1}
+	\section{Implementation}
+	%\setcounter{subsection}{2}
+	%\setcounter{subsubsection}{2}
+	\subsection*{Step 1: Data preparation}
+	\color{ForestGreen}
+	\large{\textbf{Simulation Question 1.}} 
+	\color{black}
+	\\
+ As is requested in the project description in Telegram, we have included our report for this part in the jupyter notebook file
+ 	\subsection*{Step 2: Denoising algorithm}
+	\color{ForestGreen}
+	\large{\textbf{Simulation Question 2.}} 
+	\color{black}
+	\\
+ Same as simulation question 1. We have included our report for this part in the jupyter notebook file
+ 
+	\color{blue}
+	\large{\textbf{Theory Question 1.}} if we have normal prior distribution $p_Z(z) = \mathcal{N}(\mu_z,\Sigma_z)$ and normal
+likelihood distribution $p_{Y|Z}(y|z) = \mathcal{N}(Wz + b,\Sigma_{Y|Z})$, show that joint distribution will be
+Normal and find its parameters ($\mu_{Y,Z},\Sigma_{Y,Z}$).
+	\begin{gather*}
+p_{Z,Y}(z, y) = \mathcal{N}(\mu_{Z,Y},\Sigma_{Z,Y})
+\\
+\mu_{Z,Y}=
+\begin{bmatrix}
+\mu_Z \\
+W\mu_Z+b
+\end{bmatrix}
+\\
+\Sigma_{Z,Y}=
+\begin{bmatrix}
+\Sigma_Z & \Sigma_ZW^T \\
+W\Sigma_Z & \Sigma_{Y|Z}+W\Sigma_ZW^T
+\end{bmatrix}
+	\end{gather*}
+Show that the posterior is as follows:
+	\begin{gather*}
+p_{Z,Y}(z, y) = \mathcal{N}(\mu_{Z|Y},\Sigma_{Z|Y})
+\\
+\mu_{Z|Y}=\Sigma_{Z|Y}(W^T\Sigma_{Y|Z}^{-1}(y-b)+\Sigma_Z^{-1}\mu_Z)
+\\
+\Sigma_{Z|Y}^{-1}= \Sigma_Z^{-1}+W^T\Sigma_{Y|Z}^{-1}W
+	\end{gather*}
+	\color{black}
+	\\ For the first part, assuming $y$ has dimension $D_y$ and $z$ has dimension $D_x$, we have:
+\begin{align*}
+P_{Z,Y}(z,y)&=P_{Y|Z}(y|z)P_Z(z)\\
+&=\frac{1}{\sqrt{(2\pi)^{D_y}\det \Sigma_{Y|Z}}}\exp \Big(-\frac{1}{2}(y-Wz-b)^T\Sigma_{Y|Z}^{-1}(y-Wz-b)\Big) \\
+&\,\times \frac{1}{\sqrt{(2\pi)^{D_z}\det \Sigma_{Z}}}\exp \Big(-\frac{1}{2}(z-\mu_Z)^T\Sigma_{Z}^{-1}(z-\mu_Z)\Big)
+\end{align*}
+For convenience and simplification of the expressions, we define $u:= z-\mu_Z$ and $v:=y-W\mu_Z-b$. As a result, we have $y-(Wz+b)=y-(W(z-\mu_Z+\mu_Z)+b)=v-Wu$.
+
+\begin{align}\label{eq1}
+P_{Z,Y}(z,y)=\frac{ \exp \Big(-\frac{1}{2}\big[u^T\Sigma_{Z}^{-1} u+(v-Wu)^T\Sigma_{Y|Z}^{-1}(v-Wu)\big]\Big) }{\sqrt{(2\pi)^{D_y+D_z}\det \Sigma_{Y|Z} \det \Sigma_{Z}}}
+\end{align}
+Next, we have to simplify the exponent: 
+\begin{equation} \label{simplify}
+\begin{split}
+u^T\Sigma_{Z}^{-1} u+(v-Wu)^T\Sigma_{Y|Z}^{-1}(v-Wu)&=u^T(\Sigma_{Z}^{-1}+W^T\Sigma_{Y|Z}^{-1}W)u+v^T\Sigma_{Y|Z}^{-1}v\\
+&-v^T\Sigma_{Y|Z}^{-1}Wu-u^TW^T\Sigma_{Y|Z}^{-1}v\\
+&=\begin{bmatrix}
+u^T & v^T
+\end{bmatrix}
+\begin{bmatrix}
+\Sigma_{Z}^{-1}+W^T\Sigma_{Y|Z}^{-1}W & -W^T\Sigma_{Y|Z}^{-1} \\
+-\Sigma_{Y|Z}^{-1}W & \Sigma_{Y|Z}^{-1}
+\end{bmatrix}
+\begin{bmatrix}
+u \\ v
+\end{bmatrix}\\
+&=
+\begin{bmatrix} u^T & v^T \end{bmatrix}
+A
+\begin{bmatrix} u \\ v \end{bmatrix}
+\end{split}
+\end{equation}
+We now use the inversion theorem for a block matrix, as stated in \cite{Murphy}:
+\begin{equation} 
+\begin{split}
+M=\begin{bmatrix}
+E &F \\
+G& H
+\end{bmatrix}
+\quad S=E-FH^{-1}G \Rightarrow 1:\det M=\det S \det H
+\\
+2:\;M^{-1}=\begin{bmatrix}
+S^{-1} &-S^{-1}FH^{-1} \\
+-H^{-1}GS^{-1} & H^{-1}+H^{-1}GS^{-1}FH^{-1}
+\end{bmatrix}
+\end{split}
+\end{equation}
+For the above matrix $A$ we have:
+\begin{equation} 
+\begin{split}
+&S=\Sigma_{Z}^{-1}+W^T\Sigma_{Y|Z}^{-1}W-W^T\Sigma_{Y|Z}^{-1}\Sigma_{Y|Z}\Sigma_{Y|Z}^{-1}W=\Sigma_{Z}^{-1}\\
+\Rightarrow & \boxed{A^{-1}=
+\begin{bmatrix}
+\Sigma_Z & \Sigma_ZW^T \\
+W\Sigma_Z & \Sigma_{Y|Z}+W\Sigma_ZW^T
+\end{bmatrix} }
+\quad \det A=\det \Sigma_Z^{-1} \det \Sigma_{Y|Z}^{-1}\\
+&\Rightarrow \det A^{-1}=\det \Sigma_Z \det \Sigma_{Y|Z}
+\end{split}
+\end{equation}
+Using the above results, we can write the joint distribution in a simple form:
+\begin{equation} 
+\begin{split}
+P_{Z,Y}(z,y)&=\frac{1}{\sqrt{(2\pi)^{D_y+D_z}\det A^{-1}}}\exp \Big(-\frac{1}{2}
+\begin{bmatrix} u^T & v^T \end{bmatrix}
+A
+\begin{bmatrix} u \\ v \end{bmatrix}
+\Big) \\
+&=\boxed{\frac{1}{\sqrt{(2\pi)^{D_y+D_z}\det A^{-1}}}\exp \Big(-\frac{1}{2}
+\begin{bmatrix} z-\mu_Z \\ y-W\mu_Z-b \end{bmatrix}^T
+A
+\begin{bmatrix} z-\mu_Z \\ y-W\mu_Z-b \end{bmatrix}
+\Big)} \\
+\end{split}
+\end{equation}
+We conclude that the final form of the distribution is indeed a normal distribution with the mean and variance as requested to prove. Note that $A^{-1}$ is equal to the $\Sigma_{Z,Y}$ in the question. 
+\\
+\\
+\\
+For the second part, using the definitions of $u$ and $v$ , we have:
+\begin{align}\label{eq2}
+P_{Z|Y}(z|y)=\frac{P_{Y|Z}(y|z)P_Z(z)}{P_Y(y)}=\frac{P_{Y|Z}(y|z)P_Z(z)}{\int P_{Y|Z}(y|z)P_Z(z) dz}
+\end{align}
+Now we use equations \eqref{eq1} \eqref{simplify} .Defining matrices $B=\Sigma_{Z}^{-1}+W^T\Sigma_{Y|Z}^{-1}W$ and $C=\Sigma_{Y|Z}^{-1}W$ for further notational simplicity, we have :
+\begin{equation} \label{eq7}
+\begin{split}
+P_{Z|Y}(z|y)&=\frac{\exp \Big(-\frac{1}{2}\big[u^T\Sigma_{Z}^{-1} u+(v-Wu)^T\Sigma_{Y|Z}^{-1}(v-Wu)\big]\Big) }{\int \exp \Big(-\frac{1}{2}\big[u^T\Sigma_{Z}^{-1} u+(v-Wu)^T\Sigma_{Y|Z}^{-1}(v-Wu)\big]\Big) du}\\
+&=\frac{\exp \Big(-\frac{1}{2}\big[u^TBu+v^T\Sigma_{Y|Z}^{-1}v-v^TCu-u^TC^Tv\big]\Big) }{\int \exp \Big(-\frac{1}{2}\big[u^TBu+v^T\Sigma_{Y|Z}^{-1}v-v^TCu-u^TC^Tv\big]\Big) du} \\
+&=\frac{\exp \Big(-\frac{1}{2}\big[u^TBu-v^TCu-u^TC^Tv\big]\Big) }{\int \exp \Big(-\frac{1}{2}\big[u^TBu-v^TCu-u^TC^Tv\big]\Big) du}
+\end{split}
+\end{equation}
+Next, we factorize the exponents as follows:
+\begin{equation}
+u^TBu-v^TCu-u^TC^Tv=(u-B^{-1}C^Tv)^TB(u-B^{-1}C^Tv)-v^TCB^{-1}C^Tv
+\end{equation}
+\begin{equation}
+P_{Z|Y}(z|y)=\frac{\exp \Big(-\frac{1}{2}\big[(u-B^{-1}C^Tv)^TB(u-B^{-1}C^Tv)\big]\Big) }{\int \exp \Big(-\frac{1}{2}\big[(u-B^{-1}C^Tv)^TB(u-B^{-1}C^Tv)\big]\Big) du}
+\end{equation}
+The final step is to use the basic property of a normal distribution, that is, its integral over the whole space equals to one:
+\begin{equation} 
+\begin{split}
+&\int \frac{1}{\sqrt{(2\pi)^{D_x}\det \Sigma_{X}}}\exp \Big(-\frac{1}{2}(x-\mu_X)^T\Sigma_{X}^{-1}(x-\mu_X)\Big) dx=1\\
+\Rightarrow &\int \exp \Big(-\frac{1}{2}(x-\mu_X)^T\Sigma_{X}^{-1}(x-\mu_X)\Big)=\sqrt{(2\pi)^{D_x}\det \Sigma_{X}}
+\end{split}
+\end{equation}
+We can now write:
+\begin{equation}
+\boxed{P_{Z|Y}(z|y)=\frac{\exp \Big(-\frac{1}{2}\big[(u-B^{-1}C^Tv)^TB(u-B^{-1}C^Tv)\big]\Big) }{\sqrt{(2\pi)^{D_z}\det B^{-1}}} }
+\end{equation}
+It is confirmed that the posterior is indeed a normal distribution with\\ $\boxed{\Sigma_{Z|Y}^{-1}=B=\Sigma_{Z}^{-1}+W^T\Sigma_{Y|Z}^{-1}W}$ , recalling that $u$ and $v$ are shifted versions of $z$ and $y$. Finally, we compute the mean of the posterior:
+\begin{equation} 
+\begin{split}
+u-B^{-1}Cv&=z-\mu_Z-\Sigma_{Z|Y}W^T\Sigma_{Y|Z}^{-1}(y-W\mu_Z-b)\\
+&=z-\Sigma_{Z|Y}W^T\Sigma_{Y|Z}^{-1}(y-b)+[-I+(\Sigma_Z^{-1}+W^T\Sigma_{Y|Z}^{-1}W)^{-1}W^T\Sigma_{Y|Z}^{-1}W]\mu_Z\\
+&=z-\Sigma_{Z|Y}W^T\Sigma_{Y|Z}^{-1}(y-b)-(\Sigma_Z^{-1}+W^T\Sigma_{Y|Z}^{-1}W)^{-1}\Sigma_Z^{-1}\mu_z\\
+&=z-\Sigma_{Z|Y}[W^T\Sigma_{Y|Z}^{-1}(y-b)+\Sigma_Z^{-1}\mu_z]=z-\mu_{Z|Y}\\
+&\Rightarrow \boxed{\mu_{Z|Y}=\Sigma_{Z|Y}[W^T\Sigma_{Y|Z}^{-1}(y-b)+\Sigma_Z^{-1}\mu_z]}
+\end{split}
+\end{equation}
+
+	\color{blue}
+	\large{\textbf{Theory Question 2.}} Assume that prior distribution is GMM and $p_{Y|Z}$ is a normal distribtion.
+Is posterior distribution normal? Is it also a GMM? If it is GMM, what are parameters of this
+GMM if we know parameters of the aforementioned distributions?
+	\color{black}
+	\\
+	We have to modify equation \eqref{eq1} and replace the prior distribution with a GMM. In this case, we have:
+\begin{equation} 
+\begin{split}
+P_{Z|Y}(z|y)=\frac{P_{Y|Z}(y|z)P_Z(z)}{P_Y(y)}&=\frac{P_{Y|Z}(y|z)P_Z(z)}{\int P_{Y|Z}(y|z)P_Z(z) dz}\\
+&=\frac{ \sum_{k=1}^K \pi_k\mathcal{N}(\mu_{Y|Z},\Sigma_{Y|Z})\mathcal{N}(\mu_k,\Sigma_k) } {\int\sum_{k=1}^K \pi_k\mathcal{N}(\mu_{Y|Z},\Sigma_{Y|Z})\mathcal{N}(\mu_k,\Sigma_k) dz}
+\end{split}
+\end{equation}
+In the next step, we use $u,v,C,B$ from the previous section, but we have to label them by the index $k$. Using a modified version of \eqref{eq2} and \eqref{eq7}, we can write:
+\begin{equation} 
+\begin{split}
+P_{Z|Y}(z|y)&=\frac{ \sum_{k=1}^K \frac{\pi_k}{\sqrt{(2\pi)^{D_y+D_z}\det \Sigma_{Y|Z} \det \Sigma_k}} \exp \Big(-\frac{1}{2}\big[u_k^TB_ku_k+v_k^T\Sigma_{Y|Z}^{-1}v_k-v_k^TCu_k-u_k^TC^Tv_k\big]\Big) } {\int\sum_{k=1}^K \frac{dz\pi_k}{\sqrt{(2\pi)^{D_y+D_z}\det \Sigma_{Y|Z} \det \Sigma_k}} \exp \Big(-\frac{1}{2}\big[u_k^TB_ku_k+v_k^T\Sigma_{Y|Z}^{-1}v_k-v_k^TCu_k-u_k^TC^Tv_k\big]\Big) }\\
+&=\frac{ \sum_{k=1}^K \frac{\pi_k}{\sqrt{(2\pi)^{D_z} \det \Sigma_k}} \exp \Big(-\frac{1}{2}\big[u_k^TB_ku_k+v_k^T\Sigma_{Y|Z}^{-1}v_k-v_k^TCu_k-u_k^TC^Tv_k\big]\Big) } {\sum_{k=1}^K \int\frac{\pi_k}{\sqrt{(2\pi)^{D_z} \det \Sigma_k}} \exp \Big(-\frac{1}{2}\big[u_k^TB_ku_k+v_k^T\Sigma_{Y|Z}^{-1}v_k-v_k^TCu_k-u_k^TC^Tv_k\big]\Big) du_k}
+\end{split}
+\end{equation}
+Modifying the previous factorization is as follows:
+\begin{equation} 
+\begin{split}
+u_k^TB_ku_k+v_k^T\Sigma_{Y|Z}^{-1}v_k-v_k^TCu_k-u_k^TC^Tv_k&=(u_k-B_k^{-1}C^Tv_k)^TB_k(u_k-B_k^{-1}C^Tv_k)\\&+v_k^T(\Sigma_{Y|Z}^{-1}-CB_k^{-1}C^T)v_k
+\end{split}
+\end{equation}
+Again, we use the normalization property of each gaussian distribution to evaluate the integrals:
+\begin{equation} 
+\boxed{
+\begin{split}
+P_{Z|Y}(z|y)&=\frac{ \sum_{k=1}^K \frac{ \pi_k\sqrt{\det B_k^{-1}} }{\sqrt{\det \Sigma_k}} \exp \Big(-\frac{1}{2}v_k^T(\Sigma_{Y|Z}^{-1}-CB_k^{-1}C^T)v_k\Big) \mathcal{N}(\mu_{Z|Y k},B_K^{-1})} {\sum_{k=1}^K\frac{ \pi_k\sqrt{\det B_k^{-1}} }{\sqrt{\det \Sigma_k}} \exp \Big(-\frac{1}{2}v_k^T(\Sigma_{Y|Z}^{-1}-CB_k^{-1}C^T)v_k\Big)}
+\end{split}
+}
+\end{equation} 
+Where the parameters are:
+\begin{equation} 
+\boxed{
+\begin{split}
+B_k=\Sigma_{k}^{-1}+W^T\Sigma_{Y|Z}^{-1}W\\
+C=\Sigma_{Y|Z}^{-1}W\\
+v_k=y-b-W\mu_k
+\end{split}
+}
+\end{equation}
+We conclude that the posterior is again a GMM. The mean and variance of each component is the same as in Question 1, with $\Sigma_k$ replacing $\Sigma_Z$ and the new coefficients are:
+\begin{equation} 
+\boxed{
+\begin{split}
+\pi^{\prime}_k&=\frac{ \frac{ \pi_k\sqrt{\det B_k^{-1}} }{\sqrt{\det \Sigma_k}} \exp \Big(-\frac{1}{2}v_k^T(\Sigma_{Y|Z}^{-1}-CB_k^{-1}C^T)v_k\Big) } {\sum_{k=1}^K\frac{ \pi_k\sqrt{\det B_k^{-1}} }{\sqrt{\det \Sigma_k}} \exp \Big(-\frac{1}{2}v_k^T(\Sigma_{Y|Z}^{-1}-CB_k^{-1}C^T)v_k\Big)}\\
+&=\frac{ \frac{ \pi_k }{\sqrt{\det (I+\Sigma_kW^T\Sigma_{Y|Z}^{-1}W)}} \exp \Big(-\frac{1}{2}v_k^T(\Sigma_{Y|Z}^{-1}-CB_k^{-1}C^T)v_k\Big) } {\sum_{k=1}^K\frac{ \pi_k }{\sqrt{\det (I+\Sigma_kW^T\Sigma_{Y|Z}^{-1}W)}} \exp \Big(-\frac{1}{2}v_k^T(\Sigma_{Y|Z}^{-1}-CB_k^{-1}C^T)v_k\Big)}
+\end{split}
+}
+\end{equation}
+\\
+\color{blue}
+	\large{\textbf{Theory Question 3.}} Why GMM is prefered prior distribution for Z?
+	\color{black}
+	\\
+	Because a GMM, if we use the right number of components (which in the project, will be determined with cross validation) we can approximate any desired distribution. Also, the posterior will be a GMM as well, with closed-form coefficients, means and variances. This enables us to get a MAP estimate easily.\\
+\color{ForestGreen}
+	\large{\textbf{Simulation Question 3.}} 
+	\color{black}
+	\\
+ Report  in the jupyter notebook file
+ \\
+	\color{ForestGreen}
+	\large{\textbf{Simulation Question 4.}} 
+	\color{black}
+	\\
+  Report  in the jupyter notebook file
+	\newpage
+	
+\color{black}
+\begin{thebibliography}{9}
+\bibitem{Murphy}
+Kevin P.Murphy (2012) \emph{Machine Learning-A Probabilistic Perspective}, MIT Press.
+
+\end{thebibliography}
+\end{document}
